@@ -36,16 +36,18 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIImag
         super.viewDidLoad()
         self.tabBarController?.tabBar.isHidden = true
         
-        collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 58, right: 0)
-//        collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
+        collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+        //collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
         collectionView?.alwaysBounceVertical = true
         collectionView?.backgroundColor = .white
         collectionView?.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
         collectionView.keyboardDismissMode = .interactive
-        
+        //setupDimissKeyboard()
         setupKeyboardObservers()
     }
-
+    
+    
+    
     func observeMessages() {
         guard let uid = accountKit?.currentAccessToken?.accountID, let toId = user?.id else { return }
         let userMessagesRef = Database.database().reference().child("user_messages").child(uid).child(toId)
@@ -60,7 +62,9 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIImag
                 DispatchQueue.main.async {
                     self.collectionView?.reloadData()
                     let indexPath = IndexPath(item: self.messages.count - 1, section: 0)
+                    
                     self.collectionView?.scrollToItem(at: indexPath , at: .bottom, animated: true)
+                    //self.collectionView?.scrollToLast()
                     
                 }
             }, withCancel: nil)
@@ -68,7 +72,16 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIImag
         }, withCancel: nil)
     }
     
+
+//    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+//        inputContainerView.inputTextField.resignFirstResponder()
+//        return true
+//    }
     
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // whenever user touch the chat screen, keyboard disappear
+        inputContainerView.inputTextField.resignFirstResponder()
+    }
     
     @objc func handleUploadTap() {
         let imagePickerController = UIImagePickerController()
@@ -94,7 +107,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIImag
         if let selectedImage = selectedImageFromPicker {
             uploadToFirebase(image: selectedImage)
         }
-        
         
         dismiss(animated: true, completion: nil)
     }
@@ -132,12 +144,26 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIImag
     
     func setupKeyboardObservers() {
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
     }
+    
+    
+//    @objc func textFieldDidChange(_ textField: UITextField) {
+//
+//        if textField.text?.count == 0 { // record time
+//            inputContainerView.sendButton.setImage(UIImage(named: "microphone")?.withRenderingMode(.alwaysOriginal), for: .normal)
+//        } else { // send message time
+//            inputContainerView.sendButton.setImage(nil, for: .normal)
+//            inputContainerView.sendButton.setTitle("Send", for: .normal)
+//        }
+//
+//    }
+//
+
     
     @objc func handleKeyboardDidShow() {
         if messages.count > 0 {
-            
-            let indexPath = IndexPath(item: messages.count - 1, section: 0)
+            let indexPath = IndexPath(item: self.messages.count - 1, section: 0)
             collectionView?.scrollToItem(at: indexPath, at: .top, animated: true)
         }
     }
@@ -197,12 +223,10 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIImag
         collectionView?.collectionViewLayout.invalidateLayout()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        inputContainerView.inputAccessoryView?.isHidden =  false
-    }
+    
     override func viewWillDisappear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        inputContainerView.inputAccessoryView?.isHidden =  true
+        super.viewWillDisappear(animated)
+        // inputContainerView.inputTextField.resignFirstResponder()
         // avoid memory leak
         NotificationCenter.default.removeObserver(self)
     }
@@ -236,6 +260,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIImag
                 return
             }
             
+            
             self.inputContainerView.inputTextField.text = nil
             
             guard let messageId = childRef.key else { return }
@@ -254,6 +279,7 @@ extension ChatLogController: UICollectionViewDelegateFlowLayout {
         
         // get height
         let message = messages[indexPath.item]
+        
         
         if let text = message.text {
             height = estimateFrame(from: text).height + 20
@@ -279,3 +305,5 @@ fileprivate func convertToOptionalNSAttributedStringKeyDictionary(_ input: [Stri
 fileprivate func convertFromNSAttributedStringKey(_ input: NSAttributedString.Key) -> String {
     return input.rawValue
 }
+
+

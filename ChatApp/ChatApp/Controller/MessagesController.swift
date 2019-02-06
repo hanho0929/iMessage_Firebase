@@ -226,28 +226,28 @@ class MessagesController: UITableViewController, UISearchBarDelegate  {
         //loginController.mess
         present(loginController, animated: true, completion: nil)
     }
-    
-    
-    
-    
+
+
+
+
     var searchActive : Bool = false
     var filtered:[Message] = []
     func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
         searchActive = true;
     }
-    
+
     func searchBarTextDidEndEditing(searchBar: UISearchBar) {
         searchActive = false;
     }
-    
+
     func searchBarCancelButtonClicked(searchBar: UISearchBar) {
         searchActive = false;
     }
-    
+
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
         searchActive = false;
     }
-    
+
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text == nil || searchBar.text == "" {
             searchActive = false

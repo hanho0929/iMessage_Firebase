@@ -64,12 +64,7 @@ class ChatMessageCell: UICollectionViewCell {
         addSubview(profileImageView)
         
         bubbleView.addSubview(messageImageView)
-        //x,y,w,h
-        messageImageView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor).isActive = true
-        messageImageView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
-        messageImageView.widthAnchor.constraint(equalTo: bubbleView.widthAnchor).isActive = true
-        messageImageView.heightAnchor.constraint(equalTo: bubbleView.heightAnchor).isActive = true
-        
+
         //x,y,w,h
         profileImageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 8).isActive = true
         profileImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
@@ -81,16 +76,25 @@ class ChatMessageCell: UICollectionViewCell {
         
         bubbleViewRightAnchor = bubbleView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8)
         bubbleViewRightAnchor?.isActive = true
+        
         bubbleWidthAnchor = bubbleView.widthAnchor.constraint(equalToConstant: 200)
         bubbleWidthAnchor?.isActive = true
+        
         bubbleViewLeftAnchor = bubbleView.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 8)
+        
         bubbleView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         bubbleView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
     
         
+        //x,y,w,h
+        messageImageView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor).isActive = true
+        //print("=============WIDHTH", bubbleView.widthAnchor)
+        messageImageView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
+        messageImageView.widthAnchor.constraint(equalTo: bubbleView.widthAnchor).isActive = true
+        messageImageView.heightAnchor.constraint(equalTo: bubbleView.heightAnchor).isActive = true
         
         //x,y,w,h
-        //textView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
+        
         
         textView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: 8).isActive = true
         
@@ -98,7 +102,7 @@ class ChatMessageCell: UICollectionViewCell {
         textView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         
         textView.rightAnchor.constraint(equalTo: bubbleView.rightAnchor).isActive = true
-        // textView.widthAnchor.constraint(equalToConstant: 200).isActive = true
+    
         
         textView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
     }
