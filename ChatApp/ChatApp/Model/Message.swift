@@ -19,6 +19,7 @@ class Message: NSObject {
     var imageUrl: String?
     var imageHeight: NSNumber?
     var imageWidth: NSNumber?
+    var videoUrl: String?
     
     init(dictionary: [String: AnyObject]) {
         self.fromId = dictionary["fromId"] as? String
@@ -29,6 +30,7 @@ class Message: NSObject {
         self.imageWidth = dictionary["imageWidth"] as? NSNumber
         self.imageHeight = dictionary["imageHeight"] as? NSNumber
         self.accountKit = AKFAccountKit(responseType: .accessToken)
+        self.videoUrl = dictionary["videoUrl"] as? String
     }
     
     func chatId() -> String? {
