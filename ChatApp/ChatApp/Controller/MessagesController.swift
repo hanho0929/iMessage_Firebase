@@ -16,24 +16,14 @@ class MessagesController: UITableViewController, UISearchBarDelegate  {
     var messages = [Message]()
     var messagesDictionary = [String: Message]()
     let cellId = "cellId"
-    lazy var searchBar: UISearchBar = {
-        let searchBar = UISearchBar()
-        searchBar.searchBarStyle = UISearchBar.Style.prominent
-        searchBar.placeholder = " Search..."
-        searchBar.sizeToFit()
-        searchBar.isTranslucent = false
-        //searchBar.backgroundImage = UIImage()
-        searchBar.delegate = self
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
-        return searchBar
-    }()
+    let searchController = UISearchController(searchResultsController: nil)
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setUpSearchController()
         // set accountKit to the token
         self.accountKit = AKFAccountKit(responseType: AKFResponseType.accessToken)
-        //navigationController?.navigationBar.prefersLargeTitles = true
-        tableView.contentInset = UIEdgeInsets(top: 50, left: 0, bottom: 0, right: 0)
+
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "SignOut", style: .plain, target: self, action: #selector(handleLogOut))
 
@@ -46,6 +36,15 @@ class MessagesController: UITableViewController, UISearchBarDelegate  {
         
 
         
+    }
+    
+    
+    private func setUpSearchController() {
+        // Setup the Search Controller
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
     }
     
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -80,9 +79,6 @@ class MessagesController: UITableViewController, UISearchBarDelegate  {
         checkAutoLogin()
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if searchActive {
-            return filtered.count
-        }
         return messages.count
     }
     
@@ -90,11 +86,8 @@ class MessagesController: UITableViewController, UISearchBarDelegate  {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! UserCell
         
         let message = messages[indexPath.row]
-        if searchActive {
-            cell.message = filtered[indexPath.item]
-        } else {
-            cell.message = message
-        }
+
+        cell.message = message
 
         
         return cell
@@ -194,16 +187,6 @@ class MessagesController: UITableViewController, UISearchBarDelegate  {
 //        button.setTitle(user.name, for: .normal)
 //        self.navigationItem.titleView = button
 
-        
-        // add searchBar constraints
-        self.view.addSubview(searchBar)
-        let guide = self.view.safeAreaLayoutGuide
-        searchBar.trailingAnchor.constraint(equalTo: guide.trailingAnchor).isActive = true
-        searchBar.leadingAnchor.constraint(equalTo: guide.leadingAnchor).isActive = true
-        searchBar.topAnchor.constraint(equalTo: guide.topAnchor).isActive = true
-        searchBar.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        
-        
     }
     
     @objc func handleNewMessage() {
@@ -228,44 +211,17 @@ class MessagesController: UITableViewController, UISearchBarDelegate  {
     }
 
 
-
-
-    var searchActive : Bool = false
-    var filtered:[Message] = []
-    func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
-        searchActive = true;
-    }
-
-    func searchBarTextDidEndEditing(searchBar: UISearchBar) {
-        searchActive = false;
-    }
-
-    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
-        searchActive = false;
-    }
-
-    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
-        searchActive = false;
-    }
-
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchBar.text == nil || searchBar.text == "" {
-            searchActive = false
-            // to dismiss keyboard
-            view.endEditing(true)
-            tableView.reloadData()
-        }else{
-            searchActive = true
-            let lower = searchBar.text!.lowercased()
-            filtered = messages.filter({ (message: Message) -> Bool in
-                return (message.text?.lowercased().contains(lower))!
-                //return (game.gameName?.lowercased().contains(lower))!
-            })
-            tableView.reloadData()
-        }
-    }
     
     
 
 }
 
+
+
+extension MessagesController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        
+    }
+    
+    
+}
